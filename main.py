@@ -1,87 +1,45 @@
-import tkinter as tk
-from tkinter import messagebox
+from library_system import Library
 
-class Calculator:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Prosty Kalkulator")
-        self.root.geometry("300x430")
-        self.root.resizable(False, False)
+def menu():
+    print("\n=== System Zarządzania Biblioteką ===")
+    print("1. Dodaj książkę")
+    print("2. Wypożycz książkę")
+    print("3. Zwróć książkę")
+    print("4. Pokaż dostępne książki")
+    print("5. Zapisz do pliku")
+    print("6. Wczytaj z pliku")
+    print("0. Wyjdź")
+    return input("Wybierz opcję: ")
 
-        self.expression = ""
-        self.input_text = tk.StringVar()
+library = Library()
 
-        self.zrob_przyciski()
+while True:
+    choice = menu()
 
-    def zrob_przyciski(self):
-        input_frame = tk.Frame(self.root)
-        input_frame.pack(pady=10)
-
-        input_field = tk.Entry(
-            input_frame,
-            textvariable=self.input_text,
-            font=('arial', 18),
-            justify='right',
-            bd=10,
-            relief='sunken',
-            state='readonly',
-            readonlybackground='white'
-        )
-        input_field.pack(ipady=10, fill='x')
-
-        btns_frame = tk.Frame(self.root)
-        btns_frame.pack()
-
-        buttons = [
-            ('7', '8', '9', '/'),
-            ('4', '5', '6', '*'),
-            ('1', '2', '3', '-'),
-            ('0', '.', '=', '+')
-        ]
-
-        for row_idx, row in enumerate(buttons):
-            for col_idx, char in enumerate(row):
-                button = tk.Button(
-                    btns_frame,
-                    text=char,
-                    width=5,
-                    height=2,
-                    font=('arial', 16),
-                    command=lambda ch=char: self.klikniecie(ch)
-                )
-                button.grid(row=row_idx, column=col_idx, padx=5, pady=5, sticky='nsew')
-
-        clear_btn = tk.Button(
-            self.root,
-            text='C',
-            font=('arial', 16),
-            bg='red',
-            fg='white',
-            height=2,
-            command=self.clear_expression
-        )
-        clear_btn.pack(fill='x', padx=10, pady=10)
-
-    def klikniecie(self, char):
-        if char == "=":
-            try:
-                result = str(eval(self.expression))
-                self.expression = result
-            except DzieleniePrzezZero:
-                messagebox.showerror("Błąd", "Nie można dzielić przez zero.")
-                self.expression = ""
-            except Exception:
-                messagebox.showerror("Błąd", "Nieprawidłowe wyrażenie.")
-                self.expression = ""
-        else:
-            self.expression += str(char)
-        self.input_text.set(self.expression)
-
-    def clear_expression(self):
-        self.expression = ""
-        self.input_text.set("")
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = Calculator(root)
-    root.mainloop()
+    if choice == "1":
+        try:
+            title = input("Podaj tytuł: ")
+            author = input("Podaj autora: ")
+            year = int(input("Podaj rok: "))
+            library.add_book(title, author, year)
+        except ValueError:
+            print("Rok musi być liczbą całkowitą.")
+    elif choice == "2":
+        title = input("Tytuł książki do wypożyczenia: ")
+        library.borrow_book(title)
+    elif choice == "3":
+        title = input("Tytuł książki do zwrotu: ")
+        library.return_book(title)
+    elif choice == "4":
+        library.show_available_books()
+    elif choice == "5":
+        filename = input("Nazwa pliku do zapisu (.csv): ")
+        library.save_to_csv(filename)
+    elif choice == "6":
+        filename = input("Nazwa pliku do wczytania (.csv): ")
+        library.load_from_csv(filename)
+    elif choice == "0":
+        print("Do zobaczenia!")
+        break
+    else:
+        print("Nieprawidłowy wybór.")
